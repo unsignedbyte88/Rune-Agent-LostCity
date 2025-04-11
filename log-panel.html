@@ -1,0 +1,58 @@
+<div id="log-container">
+    <div id="tabs">
+        <button id="network-tab-btn">Network</button>
+        <button id="bot-tab-btn">Bot</button>
+		<button id="mob-tab-btn">Mob Info</button>
+    </div>
+
+    <div id="network-panel">
+        <button id="toggle-logging-btn">Stop Logging</button>
+        <div id="logs">
+            <div id="inputStreamLog" class="log-panel">
+                <strong>Input Stream Logs:</strong><br>
+            </div>
+            <div id="outputStreamLog" class="log-panel">
+                <strong>Output Stream Logs:</strong><br>
+            </div>
+        </div>
+    </div>
+
+<div id="bot-panel" style="display:none; padding: 10px; height: 200px; background: #222; color: white;">
+  <div style="display: flex; height: 100%; gap: 10px;">
+
+    <!-- Buttons (Left Panel) -->
+    <div style="display: flex; flex-direction: column; width: 120px; gap: 8px;">
+      <button id="load-script-btn">Load Script</button>
+      <button id="start-script-btn">Start Script</button>
+      <button id="stop-script-btn">Stop Script</button>
+      <button id="save-script-btn">Save Script</button>
+      <input type="file" id="script-file-input" accept=".js" style="display:none;">
+    </div>
+
+    <!-- Script Editor (Middle Panel) -->
+    <textarea id="script-editor" style="flex-grow: 1; resize: none; font-family: monospace; padding: 8px;"></textarea>
+
+    <!-- Output Logs (Right Panel) -->
+    <div id="script-log-panel" style="width: 250px; overflow-y: auto; background: #1b1b1b; padding: 8px; font-size: 13px;">
+      <strong>Script Logs:</strong><br>
+    </div>
+
+  </div>
+</div>
+
+<div id="mob-panel" style="display: none; flex-direction: column; height: 100%; background: #222; color: white;">
+    
+    <!-- Mob List Panel (scrollable) -->
+    <div id="mob-list-panel" style="height: 200px; overflow-y: auto; padding: 10px; border-bottom: 1px solid #444;">
+        <strong>Active Mobs:</strong><br>
+        <div id="mob-list" style="font-size: 13px;"></div>
+    </div>
+
+    <!-- Mob Details Panel (always visible) -->
+    <div id="mob-detail-panel" style="flex-grow: 1; overflow-y: auto; padding: 10px;">
+        <strong>Mob Details:</strong><br>
+        <div id="mob-info-body" style="font-size: 12px; white-space: pre-wrap;"></div>
+    </div>
+
+</div>
+</div>

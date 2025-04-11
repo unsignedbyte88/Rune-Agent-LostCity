@@ -1,0 +1,55 @@
+#log-container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #222;
+    color: white;
+    font-size: 14px;
+    z-index: 9999;
+}
+
+#tabs {
+    display: flex;
+}
+
+#tabs button {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#logs {
+    display: flex;
+}
+
+.log-panel {
+    width: 50%;
+    height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+    border-top: 2px solid #444;
+}
+
+#inputStreamLog {
+    background: #333;
+}
+
+#outputStreamLog {
+    background: #444;
+}
+
+#bot-panel button {
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+#script-editor {
+    background: #282828;
+    color: #f1f1f1;
+    border: 1px solid #444;
+}
+
+#script-log-panel {
+    border: 1px solid #444;
+    color: #ccc;
+}
