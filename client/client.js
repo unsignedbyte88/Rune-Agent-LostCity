@@ -601,19 +601,32 @@ document.readyState === "loading"
     : initializeRuneAgent();
 
 let eventDataList = [];
+let lastOffset = 0;
 
 function grabEventData(data, length) {
+    // Slice from the last offset
+    let newData = data.slice(lastOffset, length);
+
+    // Trim trailing 0x00 bytes
+    let trimmedLength = newData.length;
+    while (trimmedLength > 0 && newData[trimmedLength - 1] === 0) {
+        trimmedLength--;
+    }
+    newData = newData.slice(0, trimmedLength);
+
     const eventData = {
         timestamp: Date.now(),
-        length: length,
-        data: data
+        length: newData.length,
+        data: newData
     };
 
-    // Insert and sort by timestamp
     eventDataList.push(eventData);
     eventDataList.sort((a, b) => a.timestamp - b.timestamp);
 
     console.log(eventData);
+
+    // Update offset for the next pass
+    lastOffset = length;
 }
 
 function dumpEventDataToFile() {
@@ -637,7 +650,6 @@ function dumpEventDataToFile() {
 }
 
 function resetBotSettings() {
-    console.log("flush");
     mobs = new Array(8191);
     npcIds = new Array(8191);
     npcCount = 0;
