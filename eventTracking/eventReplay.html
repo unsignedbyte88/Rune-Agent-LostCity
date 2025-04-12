@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Tracker Replay Annotated</title>
+    <style>
+        body { background: #111; color: #eee; font-family: monospace; text-align: center; }
+        canvas { background: #222; margin-top: 10px; border: 1px solid #555; }
+        #log { text-align: left; width: 800px; max-height: 200px; overflow-y: auto; margin: 0 auto; background: #1a1a1a; padding: 10px; border: 1px solid #333; }
+        .highlight { color: #0f0; }
+    </style>
+</head>
+<body>
+<h2> Input Tracking Replay + Key Moment Log</h2>
+<input type="file" id="upload" />
+<canvas id="screen" width="789" height="532"></canvas>
+<div id="log"><strong>Event Log:</strong><br></div>
+
+<script>
+    const canvas = document.getElementById('screen');
+    const ctx = canvas.getContext('2d');
+    const log = document.getElementById('log');
+
+    const OPCODES = {
+        1: 'Mouse Press Right',
+        2: 'Mouse Press Left',
+        3: 'Mouse Release Right',
+        4: 'Mouse Release Left',
+        5: 'Mouse Move Small',
+        6: 'Mouse Move Medium',
+        7: 'Mouse Move Large',
+        8: 'Key Pressed',
+        9: 'Key Released',
+        10: 'Focus Gained',
+        11: 'Focus Lost',
+        12: 'Mouse Entered',
+        13: 'Mouse Exited'
+    };
+
+    let events = [];
+
+    document.getElementById('upload').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const raw = JSON.parse(event.target.result);
+            const buffer = Object.keys(raw).map(k => raw[k]);
+            parseEvents(buffer);
+            replayEvents();
+        };
+        reader.readAsText(file);
+    });
+
+    function parseEvents(buffer) {
+        let pos = 0;
+        let x = 0, y = 0;
+        let time = 0;
+        events = [];
+
+        const p1 = () => buffer[pos++];
+        const p3 = () => (p1() << 16) | (p1() << 8) | p1();
+
+        while (pos < buffer.length) {
+            const opcode = p1();
+            const delta = p1();
+            time += delta * 10;
+
+            let event = { time, opcode, type: OPCODES[opcode], x, y };
+
+            if (opcode === 1 || opcode === 2 || opcode === 7) {
+                const packed = p3();
+                x = packed & 0x3FF;
+                y = packed >> 10;
+                event.x = x;
+                event.y = y;
+            } else if (opcode === 5) {
+                const b = p1();
+                const dx = (b & 15) - 8;
+                const dy = (b >> 4) - 8;
+                x += dx;
+                y += dy;
+                event.x = x;
+                event.y = y;
+            } else if (opcode === 6) {
+                const dx = p1() - 128;
+                const dy = p1() - 128;
+                x += dx;
+                y += dy;
+                event.x = x;
+                event.y = y;
+            }
+
+            events.push(event);
+        }
+    }
+
+    function replayEvents() {
+        let i = 0;
+        let startTime = performance.now();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        function drawCursor(x, y, color = "white") {
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = "#444";
+            ctx.stroke();
+        }
+
+        function logEvent(evt) {
+            const highlight = evt.opcode < 5 || evt.opcode >= 8 ? 'highlight' : '';
+            const t = evt.time.toString().padStart(5, ' ');
+            const text = `[${t}ms] ${evt.type || 'Unknown'} (${evt.x}, ${evt.y})`;
+            const line = document.createElement('div');
+            line.innerHTML = `<span class="${highlight}">${text}</span>`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function step() {
+            const now = performance.now() - startTime;
+            while (i < events.length && events[i].time <= now) {
+                const e = events[i];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let color = "#fff";
+
+                if (e.opcode === 1 || e.opcode === 3) color = "red";
+                else if (e.opcode === 2 || e.opcode === 4) color = "green";
+                else if (e.opcode >= 8 && e.opcode <= 9) color = "cyan";
+                else if (e.opcode >= 10 && e.opcode <= 13) color = "yellow";
+
+                drawCursor(e.x, e.y, color);
+                logEvent(e);
+                i++;
+            }
+
+            if (i < events.length) {
+                requestAnimationFrame(step);
+            } else {
+                console.log("Replay complete");
+            }
+        }
+
+        requestAnimationFrame(step);
+    }
+</script>
+</body>
+</html>
