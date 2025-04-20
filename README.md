@@ -2,4 +2,4 @@ This is a work in progress and is an entire shitshow with the source.  Will clea
 
 to use:
 
-run your favorite browser in developer mode.  set the client.js to use a local override, insert these files where the override occurs.
+run your favorite browser in developer mode.  set the client_module.js to use a local override, insert these files where the override occurs.
