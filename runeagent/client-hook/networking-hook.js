@@ -3,13 +3,6 @@ let inputStream = null;
 let outputStreamSet = false;
 let inputStreamSet = false;
 
-const outMethodNameMappings = {
-    $: "opcode", S: "p1", Z: "p2", dd: "p3", d8: "p4"
-};
-const inMethodNameMappings = {
-    dC: "g1", dg: "g1b", dF: "g2", dT: "g2b", dm: "g4", dQ: "gjstr", dX: "g8", V: "gbit"
-};
-
 function injectCallback(obj, method, cb) {
     const orig = obj[method];
     if (typeof orig !== "function") return console.warn(`${method} not a function`);
@@ -21,7 +14,7 @@ function injectCallback(obj, method, cb) {
 
 function outstreamCallback(method, arg) {
     const name = outMethodNameMappings[method] || method;
-    logToPanel("outputStreamLog", `Output => ${name}: ${arg}`);
+   // logToPanel("outputStreamLog", `Output => ${name}: ${arg}`);
 }
 
 function injectInstreamCallback(obj, method, cb) {
@@ -54,7 +47,7 @@ function setOutputStream(stream) {
         }
     });
     outputStreamSet = true;
-    logToPanel("outputStreamLog", "outputStream initialized");
+  //  logToPanel("outputStreamLog", "outputStream initialized");
 }
 
 function setInputStream(stream) {
@@ -65,5 +58,5 @@ function setInputStream(stream) {
         injectInstreamCallback(stream, fn, instreamCallback)
     );
     inputStreamSet = true;
-    logToPanel("inputStreamLog", "inputStream initialized");
+   /// logToPanel("inputStreamLog", "inputStream initialized");
 }

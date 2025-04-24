@@ -8,8 +8,8 @@ const app = express();
 const PORT = 3000;
 
 // Serve local files
-app.use('/client_module.js', (req, res) => {
-    const localPath = path.resolve(__dirname, 'client_module.js');
+app.use('/client.js', (req, res) => {
+    const localPath = path.resolve(__dirname, 'client.js');
     res.setHeader('Content-Type', 'application/javascript');
     fs.createReadStream(localPath).pipe(res);
 });
@@ -20,7 +20,7 @@ app.use('/', createProxyMiddleware({
     changeOrigin: true,
     selfHandleResponse: false,
     onProxyRes(proxyRes, req, res) {
-        if (req.url.includes('client_module.js')) {
+        if (req.url.includes('client.js')) {
             // Override handled above
             return;
         }
