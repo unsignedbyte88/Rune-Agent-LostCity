@@ -14,22 +14,27 @@
     });
 
     const modules = [
+        //structures
         'struct/networking/incoming-packet-identifier.js',
         'struct/networking/packet.js',
         'struct/rune-agent-events.js',
 
-
+        //client hooks
         'client-hook/packet-methods.js',
         'client-hook/networking-hook.js',
 
-
+        //ui
+        'ui/rune-agent-dom-helper.js',
+        'ui/rune-agent-ui.js',
+        //core
         'core/network-manager.js',
+        'core/ui-manager.js',
         'core/game-client.js',
 
-
+        //globals (this will probably be removed its only for the dev console
         'core/globals.js',
 
-
+        //RuneAgent
         'core/rune-agent.js',
     ];
 

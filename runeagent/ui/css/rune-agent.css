@@ -1,0 +1,60 @@
+#runeagent-wrapper {
+    width: 800px;
+    margin: 0 auto;
+    background-color: #1c1c1c;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.runeagent-tabs {
+    display: flex;
+    margin-bottom: 0;
+}
+
+.runeagent-tab-button {
+    flex: 1;
+    padding: 10px;
+    background-color: #333;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.runeagent-tab-button.active {
+    background-color: #555;
+    font-weight: bold;
+}
+
+.runeagent-tabbed-panel {
+    background-color: #222;
+    padding: 10px;
+    border-radius: 0 0 8px 8px;
+    min-height: 540px;
+    margin-top: 0;
+}
+
+.runeagent-tab-content {
+    display: none;
+}
+
+.runeagent-tab-content.active {
+    display: block;
+}
+
+#gameCanvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    background-color: black;
+}
+
+.runeagent-network-panel {
+    min-height: 500px;
+    background-color: #111;
+    border: 1px dashed #555;
+    border-radius: 8px;
+    padding: 10px;
+}
