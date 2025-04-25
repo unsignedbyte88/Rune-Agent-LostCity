@@ -25,6 +25,6 @@ const IncomingOpcodes = Object.freeze({
     OBJ_ADD: 223
 });
 
-const OpcodeNames = Object.freeze(
+const IncomingOpcodeNames = Object.freeze(
     Object.fromEntries(Object.entries(IncomingOpcodes).map(([k, v]) => [v, k]))
 );

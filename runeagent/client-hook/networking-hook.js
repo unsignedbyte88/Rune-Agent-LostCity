@@ -3,6 +3,26 @@ let inputStream = null;
 let outputStreamSet = false;
 let inputStreamSet = false;
 
+const streamSubscribers = new Set();
+
+function subscribeToStream(callback) {
+    streamSubscribers.add(callback);
+}
+
+function unsubscribeFromStream(callback) {
+    streamSubscribers.delete(callback);
+}
+
+function notifySubscribers(eventType, ...args) {
+    for (const callback of streamSubscribers) {
+        try {
+            callback(eventType, ...args);
+        } catch (e) {
+            console.warn(`Error notifying subscriber for ${eventType}:`, e);
+        }
+    }
+}
+
 function injectCallback(obj, method, cb) {
     const orig = obj[method];
     if (typeof orig !== "function") return console.warn(`${method} not a function`);
@@ -13,8 +33,8 @@ function injectCallback(obj, method, cb) {
 }
 
 function outstreamCallback(method, arg) {
-    const name = outMethodNameMappings[method] || method;
-   // logToPanel("outputStreamLog", `Output => ${name}: ${arg}`);
+    const name = OutMethodMap.getReadable(method) || method;
+    notifySubscribers(RuneAgentEvent.OUTGOING_PACKET_METHOD_CALLED,name,method,arg);
 }
 
 function injectInstreamCallback(obj, method, cb) {
@@ -28,35 +48,35 @@ function injectInstreamCallback(obj, method, cb) {
 }
 
 function instreamCallback(method, arg) {
-    if (packet !== null && packet.opcode !== null) {
-        const readableName = inMethodNameMappings[method] || method;
-        packet.methodCalls[packet.payloadOffset] = readableName;
-        packet.payload[packet.payloadOffset++] = arg;
-    }
+        const readableName = InMethodMap.getReadable(method) || method;
+        notifySubscribers(RuneAgentEvent.INCOMING_PACKET_METHOD_CALLED,readableName,method,arg);
 }
 
 function setOutputStream(stream) {
     if (outputStreamSet) return;
     outputStream = stream;
-    globalThis.outputStream = outputStream;
-    Object.entries(outMethodNameMappings).forEach(([obf, deobf]) => {
+
+    Object.entries(OutMethodMap.obfToReadable).forEach(([obf, readable]) => {
         injectCallback(stream, obf, outstreamCallback);
-        if (obf !== deobf && !(deobf in stream)) {
-            stream[deobf] = (...args) => stream[obf](...args);
-            injectCallback(stream, deobf, outstreamCallback);
+
+        if (obf !== readable && !(readable in stream)) {
+            stream[readable] = (...args) => stream[obf](...args);
+            injectCallback(stream, readable, outstreamCallback);
         }
     });
+
     outputStreamSet = true;
-  //  logToPanel("outputStreamLog", "outputStream initialized");
+    notifySubscribers(RuneAgentEvent.OUTBOUND_STREAM_SET, outputStream);
 }
 
 function setInputStream(stream) {
     if (inputStreamSet) return;
     inputStream = stream;
-    globalThis.inputStream = inputStream;
-    Object.keys(inMethodNameMappings).forEach(fn =>
-        injectInstreamCallback(stream, fn, instreamCallback)
-    );
+
+    Object.keys(InMethodMap.obfToReadable).forEach(obf => {
+        injectInstreamCallback(stream, obf, instreamCallback);
+    });
+
     inputStreamSet = true;
-   /// logToPanel("inputStreamLog", "inputStream initialized");
+    notifySubscribers(RuneAgentEvent.INBOUND_STREAM_SET, inputStream);
 }
