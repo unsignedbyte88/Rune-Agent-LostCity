@@ -1,22 +1,33 @@
-<div id="runeagent-wrapper">
+<div id="runeagent-right-panel">
+  <div class="runeagent-header">Rune Agent</div>
   <div class="runeagent-tabs">
-    <button class="runeagent-tab-button active" data-tab="runeagent-game">Game Client</button>
+    <button class="runeagent-tab-button active" data-tab="runeagent-network">Network Log</button>
+    <button class="runeagent-tab-button" data-tab="runeagent-console">Script Console</button>
     <button class="runeagent-tab-button" data-tab="runeagent-settings">Settings</button>
-    <button class="runeagent-tab-button" data-tab="runeagent-network">Network Events</button>
   </div>
-
   <div class="runeagent-tabbed-panel">
-    <div class="runeagent-tab-content" id="runeagent-game" style="display: block;">
-      <!-- canvas will go here -->
-    </div>
-    <div class="runeagent-tab-content" id="runeagent-settings" style="display: none;">
-      <div class="runeagent-settings-panel">
+
+
+    <div class="runeagent-tab-content active" id="runeagent-network">
+      <div style="display: flex; flex-direction: column; height: 100%;">
+        <div id="runeagent-network-incoming" style="flex: 1; overflow-y: auto; border-bottom: 1px solid #444; padding: 5px;">
+          <strong>Incoming Packets</strong>
+          <div id="runeagent-incoming-log"></div>
+        </div>
+        <div id="runeagent-network-outgoing" style="flex: 1; overflow-y: auto; padding: 5px;">
+          <strong>Outgoing Packets</strong>
+          <div id="runeagent-outgoing-log"></div>
+        </div>
       </div>
     </div>
-    <div class="runeagent-tab-content" id="runeagent-network" style="display: none;">
-      <div class="runeagent-network-panel">
-        <p>No events yet...</p>
-      </div>
+
+    <div class="runeagent-tab-content" id="runeagent-console" >
+      Script console here...
+    </div>
+
+
+    <div class="runeagent-tab-content" id="runeagent-settings">
+      Settings here...
     </div>
   </div>
 </div>

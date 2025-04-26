@@ -1,6 +1,4 @@
 class RuneAgentDomHelper {
-
-
     static injectStyleFromUrl(url) {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
@@ -8,25 +6,38 @@ class RuneAgentDomHelper {
         document.head.appendChild(link);
     }
 
-    static injectHtmlFromUrl(url, targetSelector) {
+    static injectHtmlFromUrl(url, containerSelector = 'body') {
         return fetch(url)
-            .then(response => response.text())
+            .then(res => res.text())
             .then(html => {
-                const container = document.querySelector(targetSelector) || document.body;
                 const wrapper = document.createElement('div');
                 wrapper.innerHTML = html;
+
+                const container = containerSelector
+                    ? document.querySelector(containerSelector)
+                    : document.body;
+
+                if (!container) {
+                    console.warn(`[RuneAgentDomHelper] Failed to find container: ${containerSelector}`);
+                    return wrapper;
+                }
+
                 container.appendChild(wrapper);
                 return wrapper;
             });
     }
 
-    static moveCanvas(targetSelector) {
-        const canvas = document.querySelector('canvas');
-        const target = document.querySelector(targetSelector);
-        if (canvas && target) {
-            target.appendChild(canvas);
-        } else {
-            console.warn("RuneAgentDomHelper: Unable to find canvas or target container.");
+    static wrapBodyContent(wrapperId = 'runeagent-left-panel') {
+        const wrapper = document.createElement('div');
+        wrapper.id = wrapperId;
+
+        // Move all current body content into wrapper
+        while (document.body.firstChild) {
+            wrapper.appendChild(document.body.firstChild);
         }
+
+        return wrapper;
     }
 }
+
+window.RuneAgentDomHelper = RuneAgentDomHelper;

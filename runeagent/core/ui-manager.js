@@ -4,7 +4,7 @@ class RuneAgentUIManager {
         this.activeTab = null;
     }
 
-     init(wrapperId = 'runeagent-wrapper') {
+    init(wrapperId = 'runeagent-right-panel') {
         this.wrapper = document.getElementById(wrapperId);
         if (!this.wrapper) {
             console.error('RuneAgentUIManager: Wrapper not found!');
@@ -13,11 +13,16 @@ class RuneAgentUIManager {
         this.tabButtons = this.wrapper.querySelector('.runeagent-tabs');
         this.tabContentPanel = this.wrapper.querySelector('.runeagent-tabbed-panel');
 
+        if (!this.tabButtons || !this.tabContentPanel) {
+            console.error('RuneAgentUIManager: Tabs or tabbed panel not found!');
+            return;
+        }
+
         // Setup already existing tabs
         this._registerExistingTabs();
     }
 
-     _registerExistingTabs() {
+    _registerExistingTabs() {
         const buttons = this.wrapper.querySelectorAll('.runeagent-tab-button');
         const contents = this.wrapper.querySelectorAll('.runeagent-tab-content');
 
@@ -32,24 +37,23 @@ class RuneAgentUIManager {
 
         // Set default active
         if (buttons.length > 0) {
-            this.activeTab = buttons[0].getAttribute('data-tab');
+            const defaultTab = buttons[0].getAttribute('data-tab');
+            this.switchToTab(defaultTab);
         }
     }
 
-     addTab(tabName, tabId, htmlContent = '') {
+    addTab(tabName, tabId, htmlContent = '') {
         if (this.tabs.has(tabId)) {
             console.warn(`RuneAgentUIManager: Tab "${tabId}" already exists.`);
             return;
         }
 
-        // Create tab button
         const button = document.createElement('button');
         button.className = 'runeagent-tab-button';
         button.textContent = tabName;
         button.setAttribute('data-tab', tabId);
         this.tabButtons.appendChild(button);
 
-        // Create tab content
         const content = document.createElement('div');
         content.className = 'runeagent-tab-content';
         content.id = tabId;
@@ -57,12 +61,11 @@ class RuneAgentUIManager {
         content.style.display = 'none';
         this.tabContentPanel.appendChild(content);
 
-        // Save and wire up event
         this.tabs.set(tabId, { button, content });
         button.addEventListener('click', () => this.switchToTab(tabId));
     }
 
-     switchToTab(tabId) {
+    switchToTab(tabId) {
         if (!this.tabs.has(tabId)) {
             console.warn(`RuneAgentUIManager: Tab "${tabId}" not found.`);
             return;
@@ -77,7 +80,7 @@ class RuneAgentUIManager {
         this.activeTab = tabId;
     }
 
-     logToTab(tabId, message) {
+    logToTab(tabId, message) {
         if (!this.tabs.has(tabId)) {
             console.warn(`RuneAgentUIManager: Tab "${tabId}" not found.`);
             return;
@@ -93,3 +96,6 @@ class RuneAgentUIManager {
         content.scrollTop = content.scrollHeight;
     }
 }
+
+// Make globally available
+window.RuneAgentUIManager = RuneAgentUIManager;

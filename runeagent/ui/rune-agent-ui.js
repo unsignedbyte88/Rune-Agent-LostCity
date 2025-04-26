@@ -1,36 +1,79 @@
+(async function RuneAgentUIBootstrap() {
+    console.log("[RuneAgent] Injecting UI...");
 
-(async function() {
-    while (!window.RuneAgentDomHelper) {
-        await new Promise(resolve => setTimeout(resolve, 50)); // wait until it loads
-    }
+    // === SAFETY CHECK ===
     if (!window.RuneAgentDomHelper) {
-        console.error('RuneAgentDomHelper not found. Make sure it is loaded first.');
+        console.error("[RuneAgent] DomHelper not found.");
         return;
     }
 
-    // 1. Inject the CSS
+    // === INJECT CSS ===
     RuneAgentDomHelper.injectStyleFromUrl('runeagent/ui/css/rune-agent.css');
 
-    // 2. Inject the HTML
-    const wrapper = await RuneAgentDomHelper.injectHtmlFromUrl('runeagent/ui/html/main-ui.html', 'body');
+    // === CREATE LAYOUT WRAPPER ===
+    const layout = document.createElement('div');
+    layout.id = 'runeagent-layout';
 
-    // 3. Move the canvas into the Game Client tab
-    RuneAgentDomHelper.moveCanvas('#runeagent-game');
+    // === WRAP EXISTING PAGE CONTENT INTO LEFT PANEL ===
+    const leftPanel = RuneAgentDomHelper.wrapBodyContent('runeagent-left-panel');
 
-    // 4. Setup tab switching
-    const buttons = wrapper.querySelectorAll('.runeagent-tab-button');
-    const contents = wrapper.querySelectorAll('.runeagent-tab-content');
+    // === CREATE DRAGGABLE RESIZER ===
+    const resizer = document.createElement('div');
+    resizer.id = 'runeagent-resizer';
+
+    // === LOAD RIGHT PANEL HTML ===
+    const rightPanelWrapper = document.createElement('div');
+    const htmlWrapper = await RuneAgentDomHelper.injectHtmlFromUrl('runeagent/ui/html/main-ui.html');
+    Array.from(htmlWrapper.childNodes).forEach(child => rightPanelWrapper.appendChild(child));
+
+    // === BUILD THE FINAL SPLIT LAYOUT ===
+    layout.appendChild(leftPanel);
+    layout.appendChild(resizer);
+    layout.appendChild(rightPanelWrapper);
+
+    // === ATTACH TO DOCUMENT ===
+    document.body.appendChild(layout);
+
+    // === TAB SWITCHING LOGIC ===
+    const buttons = rightPanelWrapper.querySelectorAll('.runeagent-tab-button');
+    const contents = rightPanelWrapper.querySelectorAll('.runeagent-tab-content');
 
     buttons.forEach(button => {
         button.addEventListener('click', () => {
             buttons.forEach(b => b.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
             button.classList.add('active');
-
-            const tab = button.getAttribute('data-tab');
-            contents.forEach(content => {
-                content.style.display = (content.id === tab) ? 'block' : 'none';
-            });
+            const target = button.getAttribute('data-tab');
+            const activePanel = rightPanelWrapper.querySelector(`#${target}`);
+            if (activePanel) activePanel.classList.add('active');
         });
     });
-    console.log("RuneAgent UI added");
+
+    // === DRAG-TO-RESIZE LOGIC ===
+    const rightPanel = rightPanelWrapper.querySelector('#runeagent-right-panel');
+    let isDragging = false;
+
+    resizer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        document.body.style.cursor = 'ew-resize';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const newRightWidth = window.innerWidth - e.clientX;
+        const clamped = Math.min(800, Math.max(200, newRightWidth));
+        rightPanel.style.width = `${clamped}px`;
+        leftPanel.style.flex = 'none';
+        leftPanel.style.width = `calc(100vw - ${clamped + 5}px)`;
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            document.body.style.cursor = '';
+        }
+    });
+
+    console.log("[RuneAgent] UI injected successfully.");
 })();

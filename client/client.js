@@ -1,57 +1,65 @@
-(async function () {
-    console.log("RuneAgent initialized (local)");
+(async function RuneAgentLoader() {
+    console.log("RuneAgent Loader Started");
 
-    // Get directory path from this script's location
+
     const basePath = "runeagent/";
 
-    // Load modules from the same directory
-    const loadScript = src => new Promise((resolve, reject) => {
+    const loadScript = (src) => new Promise((resolve, reject) => {
         const script = document.createElement('script');
         script.src = basePath + src;
-        script.onload = resolve;
-        script.onerror = reject;
+        script.onload = () => {
+            console.log(`[RuneAgent] Loaded: ${src}`);
+            resolve();
+        };
+        script.onerror = (err) => {
+            console.error(`[RuneAgent] Failed to load: ${src}`, err);
+            reject(err);
+        };
         document.head.appendChild(script);
     });
 
     const modules = [
-        //structures
+        // structures
         'struct/networking/incoming-packet-identifier.js',
         'struct/networking/packet.js',
         'struct/rune-agent-events.js',
 
-        //client hooks
+        // client hooks
         'client-hook/packet-methods.js',
         'client-hook/networking-hook.js',
 
-        //ui
+        // ui
         'ui/rune-agent-dom-helper.js',
         'ui/rune-agent-ui.js',
-        //core
+
+        // core
         'core/network-manager.js',
         'core/ui-manager.js',
         'core/game-client.js',
 
-        //globals (this will probably be removed its only for the dev console
+        // globals
         'core/globals.js',
 
-        //RuneAgent
+        // main
         'core/rune-agent.js',
     ];
 
-    for (let mod of modules) {
-        try {
-            await loadScript(`${mod}`);
-            console.log(`${mod} loaded`);
-        } catch (err) {
-            console.error(`Failed to load ${mod}`, err);
+    try {
+        for (const mod of modules) {
+            await loadScript(mod); // wait each script completely before next
         }
+
+
+        if (typeof RuneAgent === 'function') {
+            const runeAgent = new RuneAgent();
+            runeAgent.initializeRuneAgent();
+            console.log("[RuneAgent] Loader Complete.");
+        } else {
+            console.error("[RuneAgent] RuneAgent class not found after loading scripts.");
+        }
+    } catch (err) {
+        console.error("[RuneAgent] Loader halted due to error:", err);
     }
-
-    const runeAgent = new RuneAgent();
-    runeAgent.initializeRuneAgent();
-
-
-
 })();
 
 

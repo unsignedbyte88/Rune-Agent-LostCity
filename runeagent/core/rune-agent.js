@@ -9,7 +9,7 @@ class RuneAgent {
         this.gameClient = new GameClient();
         this.networkManager = new NetworkManager();
         this.uiManager = new RuneAgentUIManager();
-        this.uiManager.init();
+      //  this.uiManager.init();
         console.log("RuneAgent initialized");
     }
 

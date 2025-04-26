@@ -1,39 +1,77 @@
-#runeagent-wrapper {
-    width: 800px;
-    margin: 0 auto;
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#runeagent-layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#runeagent-left-panel {
+    flex: 1;
+    overflow: auto;
+    background-color: black;
+    position: relative;
+}
+
+#runeagent-resizer {
+    width: 5px;
+    cursor: ew-resize;
+    background-color: #555;
+    z-index: 1000;
+}
+
+#runeagent-right-panel {
+    width: 400px;
+    min-width: 200px;
+    max-width: 800px;
     background-color: #1c1c1c;
-    border: 1px solid #333;
-    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #333;
+    overflow: hidden;
+}
+
+.runeagent-header {
+    background-color: #111;
     padding: 10px;
-    margin-top: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    border-bottom: 1px solid #333;
 }
 
 .runeagent-tabs {
     display: flex;
-    margin-bottom: 0;
+    background: #333;
 }
 
 .runeagent-tab-button {
     flex: 1;
     padding: 10px;
-    background-color: #333;
-    border: none;
+    background: #333;
     color: white;
+    border: none;
     cursor: pointer;
     font-size: 14px;
 }
 
 .runeagent-tab-button.active {
-    background-color: #555;
+    background: #555;
     font-weight: bold;
 }
 
 .runeagent-tabbed-panel {
-    background-color: #222;
+    flex: 1;
+    overflow-y: auto;
+    background: #222;
     padding: 10px;
-    border-radius: 0 0 8px 8px;
-    min-height: 540px;
-    margin-top: 0;
 }
 
 .runeagent-tab-content {
@@ -42,19 +80,4 @@
 
 .runeagent-tab-content.active {
     display: block;
-}
-
-#gameCanvas {
-    width: 100%;
-    height: auto;
-    display: block;
-    background-color: black;
-}
-
-.runeagent-network-panel {
-    min-height: 500px;
-    background-color: #111;
-    border: 1px dashed #555;
-    border-radius: 8px;
-    padding: 10px;
 }
