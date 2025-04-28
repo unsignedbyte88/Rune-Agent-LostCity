@@ -23,11 +23,13 @@ class RuneAgentUIManager {
     }
 
     _registerExistingTabs() {
+        console.log("called");
         const buttons = this.wrapper.querySelectorAll('.runeagent-tab-button');
         const contents = this.wrapper.querySelectorAll('.runeagent-tab-content');
 
         buttons.forEach(button => {
             const tabId = button.getAttribute('data-tab');
+            console.log(tabId);
             const content = [...contents].find(c => c.id === tabId);
             if (tabId && content) {
                 this.tabs.set(tabId, { button, content });
@@ -87,12 +89,20 @@ class RuneAgentUIManager {
         }
 
         const { content } = this.tabs.get(tabId);
-        const logEntry = document.createElement('div');
-        logEntry.textContent = message;
-        logEntry.style.padding = '2px 0';
-        content.appendChild(logEntry);
+        const logContainer = document.getElementById('runeagent-log');
+        const entry = document.createElement('div');
+        entry.className = 'runeagent-log-entry';
+        const timestamp = document.createElement('span');
+        timestamp.className = 'runeagent-log-timestamp';
+        timestamp.textContent = `[${new Date().toLocaleTimeString()}]`;
+        const msg = document.createElement('span');
+        msg.className = 'runeagent-log-message';
+        msg.textContent = message;
+        entry.appendChild(timestamp);
+        entry.appendChild(msg);
+        logContainer.appendChild(entry);
 
-        // Optional: Auto-scroll to bottom
+        logContainer.scrollTop = logContainer.scrollHeight;
         content.scrollTop = content.scrollHeight;
     }
 }

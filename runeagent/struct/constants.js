@@ -1,0 +1,1 @@
+const RuneAgentLogTab = "#runeagent-agent-log";

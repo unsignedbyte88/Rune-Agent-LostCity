@@ -66,7 +66,7 @@ function setOutputStream(stream) {
     });
 
     outputStreamSet = true;
-    notifySubscribers(RuneAgentEvent.OUTBOUND_STREAM_SET, outputStream);
+    notifySubscribers(RuneAgentEvent.OUTBOUND_STREAM_HOOKED, outputStream);
 }
 
 function setInputStream(stream) {
@@ -78,5 +78,5 @@ function setInputStream(stream) {
     });
 
     inputStreamSet = true;
-    notifySubscribers(RuneAgentEvent.INBOUND_STREAM_SET, inputStream);
+    notifySubscribers(RuneAgentEvent.INBOUND_STREAM_HOOKED, inputStream);
 }
